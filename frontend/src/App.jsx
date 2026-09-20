@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import "./App.css";
 
-const API_URL = "http://127.0.0.1:8000/api/analyze";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [form, setForm] = useState({
@@ -100,9 +100,9 @@ function App() {
           }
         });
         formData.append("image", wasteImage);
-        response = await axios.post("http://127.0.0.1:8000/api/analyze-image", formData);
+        response = await axios.post(`${API_URL}/api/analyze-image`, formData);
       } else {
-        response = await axios.post(API_URL, payload);
+        response = await axios.post(`${API_URL}/api/analyze`, payload);
       }
       const data = response.data;
 
