@@ -180,6 +180,22 @@ input {
   accent-color: #138252;
 }
 
+.image-input-group small {
+  color: #71847d;
+  font-size: 12px;
+}
+
+.image-preview {
+  width: min(360px, 100%);
+  max-height: 220px;
+  object-fit: contain;
+  object-position: left;
+  border: 1px solid #cfddd7;
+  border-radius: 10px;
+  background: #fbfdfc;
+  padding: 6px;
+}
+
 .run-button {
   margin-top: 25px;
   border: 0;
@@ -315,6 +331,57 @@ input {
   gap: 18px;
 }
 
+.rag-card {
+  background: #f5fbf7;
+  border: 1px solid #cfe9d9;
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 24px;
+}
+
+.rag-card h3 {
+  margin: 8px 0 4px;
+  color: #173d32;
+}
+
+.rag-method {
+  margin: 0 0 18px;
+  color: #6b8178;
+  font-size: 13px;
+}
+
+.rag-context-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.rag-context {
+  background: white;
+  border: 1px solid #dce8e2;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.rag-context h4 {
+  margin: 0 0 8px;
+  color: #245b47;
+  font-size: 15px;
+}
+
+.rag-context p {
+  margin: 0 0 12px;
+  color: #536a60;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.rag-context a {
+  color: #08794b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .agent-card {
   background: white;
   border: 1px solid #dce8e2;
@@ -419,6 +486,20 @@ input {
   font-weight: 800;
 }
 
+.image-analysis {
+  border-top: 1px solid #e1e9e5;
+  margin-top: 15px;
+  padding-top: 15px;
+  display: grid;
+  gap: 5px;
+  color: #536a60;
+  font-size: 12px;
+}
+
+.image-analysis strong {
+  color: #245b47;
+}
+
 .success-box {
   margin-top: 18px;
   padding: 14px 18px;
@@ -458,7 +539,8 @@ input {
   }
 
   .form-grid,
-  .agents-grid {
+  .agents-grid,
+  .rag-context-grid {
     grid-template-columns: 1fr;
   }
 

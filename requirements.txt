@@ -2,3 +2,5 @@ fastapi==0.141.1
 uvicorn==0.53.0
 pydantic==2.13.5
 langgraph==1.2.11
+Pillow==11.3.0
+python-multipart==0.0.20

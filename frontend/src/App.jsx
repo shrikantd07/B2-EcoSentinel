@@ -27,6 +27,8 @@ function App() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [wasteImage, setWasteImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -35,6 +37,33 @@ function App() {
       ...previous,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setWasteImage(null);
+      setImagePreview("");
+      return;
+    }
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setWasteImage(null);
+      setImagePreview("");
+      setError("Please select a JPEG, PNG, or WEBP image.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setWasteImage(null);
+      setImagePreview("");
+      setError("Please select an image smaller than 5 MB.");
+      return;
+    }
+
+    setError("");
+    setWasteImage(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
   const runAnalysis = async () => {
@@ -58,7 +87,23 @@ function App() {
         },
       };
 
-      const response = await axios.post(API_URL, payload);
+      let response;
+      if (wasteImage) {
+        const formData = new FormData();
+        Object.entries(payload).forEach(([group, values]) => {
+          if (typeof values === "object") {
+            Object.entries(values).forEach(([key, value]) => {
+              formData.append(key, String(value));
+            });
+          } else {
+            formData.append(group, String(values));
+          }
+        });
+        formData.append("image", wasteImage);
+        response = await axios.post("http://127.0.0.1:8000/api/analyze-image", formData);
+      } else {
+        response = await axios.post(API_URL, payload);
+      }
       const data = response.data;
 
       setReport({
@@ -209,6 +254,20 @@ function App() {
                 Severe litter detected
               </label>
             </div>
+
+            <div className="input-group full image-input-group">
+              <label htmlFor="waste-image">Waste / Environment Image</label>
+              <input
+                id="waste-image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageChange}
+              />
+              {imagePreview && (
+                <img className="image-preview" src={imagePreview} alt="Selected waste analysis preview" />
+              )}
+              <small>Optional. JPEG, PNG, or WEBP up to 5 MB.</small>
+            </div>
           </div>
 
           <button
@@ -282,6 +341,28 @@ function App() {
               </div>
             </section>
 
+            {report.rag?.enabled && report.rag.context?.length > 0 && (
+              <section className="rag-card">
+                <div className="report-label">RETRIEVED GUIDANCE</div>
+                <h3>Environmental Context</h3>
+                <p className="rag-method">
+                  Local knowledge retrieved with TF-IDF similarity.
+                </p>
+
+                <div className="rag-context-grid">
+                  {report.rag.context.map((item) => (
+                    <article className="rag-context" key={`${item.title}-${item.text}`}>
+                      <h4>{item.title}</h4>
+                      <p>{item.text}</p>
+                      <a href={item.url} target="_blank" rel="noreferrer">
+                        {item.source}
+                      </a>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section className="agents-grid">
               {report.specialist_reports.map((agent) => (
                 <div className="agent-card" key={agent.agent}>
@@ -326,6 +407,18 @@ function App() {
                           {detail}
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {agent.image_analysis && (
+                    <div className="image-analysis">
+                      <strong>Image analysis</strong>
+                      <span>
+                        Approximate foreground regions: {agent.image_analysis.approximate_detected_litter_count}
+                      </span>
+                      <span>
+                        Quality: {agent.image_analysis.analysis_quality}
+                      </span>
                     </div>
                   )}
 

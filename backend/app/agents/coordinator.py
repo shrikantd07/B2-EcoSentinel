@@ -51,6 +51,7 @@ def waste_node(state: EcoState):
     result = analyze_waste(
         data["litter_count"],
         data["severe_litter"],
+        data.get("image_analysis"),
     )
 
     return {
@@ -59,6 +60,8 @@ def waste_node(state: EcoState):
 
 
 def coordinator_node(state: EcoState):
+    from backend.app.rag.retriever import retrieve_environmental_guidance
+
     air = state["air_report"]
     water = state["water_report"]
     waste = state["waste_report"]
@@ -99,6 +102,12 @@ def coordinator_node(state: EcoState):
         "contributors": contributors,
     }
 
+    rag = retrieve_environmental_guidance(
+        state["air_input"],
+        state["water_input"],
+        state["waste_input"],
+    )
+
     final_report = {
         "area": state["area"],
         "overall_risk": overall_risk,
@@ -106,6 +115,7 @@ def coordinator_node(state: EcoState):
         "water": water,
         "waste": waste,
         "coordinator": coordinator_report,
+        "rag": rag,
     }
 
     return {
