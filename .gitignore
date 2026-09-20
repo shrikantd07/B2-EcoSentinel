@@ -33,6 +33,7 @@ htmlcov/
 build/
 dist/
 *.egg-info/
+*.zip
 
 # Node
 node_modules/
