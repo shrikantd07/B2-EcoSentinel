@@ -59,8 +59,13 @@ function App() {
       };
 
       const response = await axios.post(API_URL, payload);
+      const data = response.data;
 
-      setReport(response.data);
+      setReport({
+        ...data,
+        contributors: data.coordinator.contributors,
+        specialist_reports: [data.air, data.water, data.waste],
+      });
     } catch (err) {
       console.error(err);
       setError(
@@ -269,7 +274,7 @@ function App() {
               <div className="contributors">
                 <strong>Contributing signals:</strong>
 
-                {(report.coordinator?.contributors ?? []).map((contributor) => (
+                {report.contributors.map((contributor) => (
                   <span key={contributor} className="signal-pill">
                     {contributor}
                   </span>
@@ -278,7 +283,7 @@ function App() {
             </section>
 
             <section className="agents-grid">
-              {[report.air, report.water, report.waste].filter(Boolean).map((agent) => (
+              {report.specialist_reports.map((agent) => (
                 <div className="agent-card" key={agent.agent}>
                   <div className="agent-header">
                     <div className="agent-title">
